@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function Index() {
+export default function WishListScreen() {
   return (
     <View style={styles.container}>
-      <Text>내 바이닐</Text>
+      <Text>위시리스트</Text>
     </View>
   );
 }
