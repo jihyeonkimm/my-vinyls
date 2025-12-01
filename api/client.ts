@@ -5,6 +5,10 @@ const BASE_URL =
 
 const apiClient = axios.create({
   baseURL: BASE_URL,
+  timeout: 30000, // 30초
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 export default apiClient;

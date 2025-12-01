@@ -10,6 +10,8 @@ export interface SearchOptions {
   country?: string;
   format?: string;
   track?: string;
+  page?: number;
+  perPage?: number;
 }
 
 export interface SearchResultItem {
@@ -35,4 +37,16 @@ export interface SearchResponse {
     };
     items: number;
   };
+}
+
+export interface MyVinyl {
+  id: string;
+  title: string;
+  thumb: string;
+  genre?: string[];
+  year?: number;
+  style?: string[];
+  country?: string;
+  rating?: number;
+  review?: string;
 }
