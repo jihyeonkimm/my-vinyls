@@ -28,7 +28,7 @@ export default function Index() {
           renderItem={({ item }) => (
             <View style={styles.myVinylContainer}>
               <Image
-                source={item.thumb}
+                source={{ uri: item.thumb }}
                 style={{ width: 100, height: 100 }}
                 contentFit="cover"
               />

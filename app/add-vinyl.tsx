@@ -98,6 +98,7 @@ export default function AddVinyl() {
       id: selectedVinyl.id.toString(),
       title: selectedVinyl.title,
       thumb: selectedVinyl.thumb,
+      cover_image: selectedVinyl.cover_image,
       genre: selectedVinyl.genre,
       style: selectedVinyl.style,
       year: selectedVinyl.year,
@@ -110,7 +111,7 @@ export default function AddVinyl() {
       const success = await saveVinyl(myVinyl);
       if (success) {
         Alert.alert('성공', '바이닐이 내 바이닐 목록에 추가되었습니다.');
-        // router.back();
+        router.back();
       }
     } catch (error) {
       console.error('바이닐 추가 실패:', error);
@@ -163,7 +164,7 @@ export default function AddVinyl() {
               >
                 <Image
                   style={styles.resultImage}
-                  source={{ uri: item.thumb }}
+                  source={{ uri: item.cover_image }}
                   contentFit="cover"
                   transition={1000}
                 />
@@ -197,7 +198,7 @@ export default function AddVinyl() {
               <Text style={styles.resultTitle}>선택된 바이닐:</Text>
               <Image
                 style={styles.resultImage}
-                source={{ uri: selectedVinyl.thumb }}
+                source={{ uri: selectedVinyl.cover_image }}
                 contentFit="cover"
                 transition={1000}
               />

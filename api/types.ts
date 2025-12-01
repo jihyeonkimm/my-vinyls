@@ -43,6 +43,7 @@ export interface MyVinyl {
   id: string;
   title: string;
   thumb: string;
+  cover_image?: string;
   genre?: string[];
   year?: number;
   style?: string[];
