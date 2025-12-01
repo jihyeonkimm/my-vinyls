@@ -1,11 +1,13 @@
 import { SearchResponse, SearchResultItem } from '@/api/types';
 import { searchVinyls } from '@/api/vinyl';
 import StarRating from '@/components/star-rating';
+import { saveVinyl } from '@/utils/storage';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   Pressable,
   StyleSheet,
@@ -16,19 +18,21 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function AddVinyl() {
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [searchResults, setSearchResults] = useState<SearchResultItem[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>(''); // 검색어 상태
+  const [searchResults, setSearchResults] = useState<SearchResultItem[]>([]); // 검색 결과 상태
   const [pagination, setPagination] = useState<
     SearchResponse['pagination'] | null
-  >(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [loadingMore, setLoadingMore] = useState<boolean>(false);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [hasMore, setHasMore] = useState<boolean>(true);
+  >(null); // 페이지네이션 상태
+  const [loading, setLoading] = useState<boolean>(false); // 로딩 컴포넌트 표시
+  const [loadingMore, setLoadingMore] = useState<boolean>(false); // 추가 로딩인지 여부
+  const [currentPage, setCurrentPage] = useState<number>(1); // 현재 페이지 상태 관리
+  const [hasMore, setHasMore] = useState<boolean>(true); // 더 불러올 데이터가 있는지 여부
   const [error, setError] = useState<string | null>(null);
   const [selectedVinyl, setSelectedVinyl] = useState<SearchResultItem | null>(
     null
-  );
+  ); // 선택한 바이닐
+  const [selectedRating, setSelectedRating] = useState<number>(0); // 선택한 별점
+  const [reviewText, setReviewText] = useState<string>(''); // 리뷰 텍스트
   const router = useRouter();
 
   const handleSearch = async (
@@ -84,6 +88,36 @@ export default function AddVinyl() {
   const loadMore = () => {
     if (!loadingMore && hasMore) {
       handleSearch(currentPage + 1, true);
+    }
+  };
+
+  const handleAddVinyl = async () => {
+    if (!selectedVinyl) return;
+
+    const myVinyl: MyVinyl = {
+      id: selectedVinyl.id.toString(),
+      title: selectedVinyl.title,
+      thumb: selectedVinyl.thumb,
+      genre: selectedVinyl.genre,
+      style: selectedVinyl.style,
+      year: selectedVinyl.year,
+      country: selectedVinyl.country,
+      rating: selectedRating,
+      review: reviewText,
+    };
+
+    try {
+      const success = await saveVinyl(myVinyl);
+      if (success) {
+        Alert.alert('성공', '바이닐이 내 바이닐 목록에 추가되었습니다.');
+        // router.back();
+      }
+    } catch (error) {
+      console.error('바이닐 추가 실패:', error);
+      Alert.alert(
+        '오류',
+        '바이닐을 추가하는 데 실패했습니다. 다시 시도해주세요.'
+      );
     }
   };
 
@@ -176,12 +210,17 @@ export default function AddVinyl() {
               <Text style={styles.resultTitle}>{selectedVinyl.country}</Text>
             </View>
             <View>
-              <StarRating />
+              <StarRating
+                rating={selectedRating}
+                onRatingChange={setSelectedRating}
+              />
               <TextInput
                 style={styles.searchInput}
                 placeholder="바이닐에 대한 감상을 남겨주세요."
+                value={reviewText}
+                onChangeText={setReviewText}
               />
-              <Pressable style={{ marginTop: 10 }}>
+              <Pressable style={{ marginTop: 10 }} onPress={handleAddVinyl}>
                 <Text>내 바이닐로 추가하기</Text>
               </Pressable>
             </View>
