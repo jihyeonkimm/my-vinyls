@@ -1,7 +1,7 @@
-import { SearchResponse, SearchResultItem } from '@/api/types';
+import { MyVinyl, SearchResponse, SearchResultItem } from '@/api/types';
 import { searchVinyls } from '@/api/vinyl';
 import StarRating from '@/components/star-rating';
-import { saveVinyl } from '@/utils/storage';
+import { getMyVinyls, saveVinyl } from '@/utils/storage';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -94,15 +94,19 @@ export default function AddVinyl() {
   const handleAddVinyl = async () => {
     if (!selectedVinyl) return;
 
+    const existVinyl = await getMyVinyls();
+
+    const isAlreadyAdded = existVinyl.some(
+      vinyl => vinyl.id === selectedVinyl.id
+    );
+
+    if (isAlreadyAdded) {
+      Alert.alert('알림', '이미 내 바이닐 목록에 추가된 바이닐입니다.');
+      return;
+    }
+
     const myVinyl: MyVinyl = {
-      id: selectedVinyl.id.toString(),
-      title: selectedVinyl.title,
-      thumb: selectedVinyl.thumb,
-      cover_image: selectedVinyl.cover_image,
-      genre: selectedVinyl.genre,
-      style: selectedVinyl.style,
-      year: selectedVinyl.year,
-      country: selectedVinyl.country,
+      id: selectedVinyl.id,
       rating: selectedRating,
       review: reviewText,
     };

@@ -18,6 +18,7 @@ export interface SearchResultItem {
   id: number;
   title: string;
   thumb: string;
+  cover_image?: string;
   year: number;
   style?: string[];
   uri?: string;
@@ -40,14 +41,41 @@ export interface SearchResponse {
 }
 
 export interface MyVinyl {
-  id: string;
+  id: number;
+  // title: string;
+  // thumb: string;
+  // cover_image?: string;
+  // genre?: string[];
+  // year?: number;
+  // style?: string[];
+  // country?: string;
+  rating?: number;
+  review?: string;
+}
+
+export interface VinylDetail {
+  id: number;
+  year: string;
+  artists: {
+    name: string;
+    id?: number;
+  }[];
   title: string;
-  thumb: string;
-  cover_image?: string;
-  genre?: string[];
-  year?: number;
-  style?: string[];
   country?: string;
+  release?: string;
+  genres?: string[];
+  styles?: string[];
+  tracklist: {
+    position: string;
+    title: string;
+    duration: string;
+  }[];
+  images?: {
+    type: string;
+    uri: string;
+    resource_url: string;
+    uri150: string;
+  }[];
   rating?: number;
   review?: string;
 }

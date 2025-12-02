@@ -1,5 +1,5 @@
 import apiClient from './client';
-import { SearchOptions, SearchResponse } from './types';
+import { SearchOptions, SearchResponse, VinylDetail } from './types';
 
 export const searchVinyls = async (
   options: SearchOptions
@@ -8,5 +8,10 @@ export const searchVinyls = async (
     params: options,
   });
 
+  return response.data;
+};
+
+export const getVinylDetails = async (id: number): Promise<VinylDetail> => {
+  const response = await apiClient.get(`api/releases/${id}`);
   return response.data;
 };
