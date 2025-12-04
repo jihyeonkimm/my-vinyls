@@ -5,6 +5,7 @@ export default function RootLayout() {
     <Stack>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="add-vinyl" options={{ headerShown: false }} />
+      <Stack.Screen name="info/[id]" options={{ headerShown: false }} />
     </Stack>
   );
 }

@@ -2,8 +2,9 @@ import { VinylDetail } from '@/api/types';
 import { getVinylDetails } from '@/api/vinyl';
 import WriteButton from '@/components/write-button';
 import { deleteVinyl, getMyVinyls } from '@/utils/storage';
-import { Image } from 'expo-image';
 import { useFocusEffect } from '@react-navigation/native';
+import { Image } from 'expo-image';
+import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import {
   Alert,
@@ -17,6 +18,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Index() {
   const [myVinyls, setMyVinyls] = useState<VinylDetail[]>([]);
+  const router = useRouter();
 
   const loadMyVinyls = async () => {
     const savedVinyls = await getMyVinyls(); // AsyncStorage에 저장된 내 바이닐
@@ -50,6 +52,10 @@ export default function Index() {
     }
   };
 
+  const handleMoveToInfoPage = (id: number) => {
+    router.push(`/info/${id}`);
+  };
+
   useFocusEffect(
     useCallback(() => {
       loadMyVinyls();
@@ -60,25 +66,34 @@ export default function Index() {
     <SafeAreaView style={styles.container}>
       {myVinyls.length > 0 ? (
         <FlatList
-          style={{ width: '100%' }}
+          style={{
+            width: '100%',
+            maxWidth: '100%',
+          }}
+          contentContainerStyle={styles.listContainer}
           data={myVinyls}
           keyExtractor={(item, index) => `${item.id}-${index}`}
+          numColumns={2}
+          columnWrapperStyle={styles.columnWrapper}
           renderItem={({ item, index }) => (
-            <View style={styles.myVinylContainer}>
+            <Pressable
+              style={styles.itemContainer}
+              onPress={() => handleMoveToInfoPage(item.id)}
+            >
               <Image
                 source={{ uri: item.images?.[0].uri }}
-                style={{ width: 100, height: 100 }}
+                style={styles.image}
                 contentFit="cover"
               />
-              <View style={{ flex: 1, flexShrink: 1 }}>
+              <View>
                 <Text>{item.title}</Text>
                 <Text>{item.artists[0].name}</Text>
                 {item.review && <Text>{item.review}</Text>}
               </View>
-              <Pressable onPress={() => handleDeleteVinyl(index)}>
+              {/* <Pressable onPress={() => handleDeleteVinyl(index)}>
                 <Text>삭제</Text>
-              </Pressable>
-            </View>
+              </Pressable> */}
+            </Pressable>
           )}
         />
       ) : (
@@ -99,8 +114,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  myVinylContainer: {
+  listContainer: {
     flex: 1,
-    flexDirection: 'row',
+    width: '100%',
+    maxWidth: '100%',
+    paddingHorizontal: 8,
+  },
+  columnWrapper: {
+    gap: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  itemContainer: {
+    flex: 1,
+    maxWidth: '49%',
+  },
+  image: {
+    width: '100%',
+    aspectRatio: 1,
   },
 });
