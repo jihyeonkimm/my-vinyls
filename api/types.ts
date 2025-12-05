@@ -78,4 +78,5 @@ export interface VinylDetail {
   }[];
   rating?: number;
   review?: string;
+  released?: string;
 }

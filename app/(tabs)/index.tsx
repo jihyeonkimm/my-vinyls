@@ -1,6 +1,9 @@
 import { VinylDetail } from '@/api/types';
 import { getVinylDetails } from '@/api/vinyl';
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
 import WriteButton from '@/components/write-button';
+import { useThemeColor } from '@/hooks/use-theme-color';
 import { deleteVinyl, getMyVinyls } from '@/utils/storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { Image } from 'expo-image';
@@ -14,11 +17,13 @@ import {
   Text,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Index() {
   const [myVinyls, setMyVinyls] = useState<VinylDetail[]>([]);
   const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const backgroundColor = useThemeColor({}, 'background');
 
   const loadMyVinyls = async () => {
     const savedVinyls = await getMyVinyls(); // AsyncStorage에 저장된 내 바이닐
@@ -63,12 +68,17 @@ export default function Index() {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View
+      style={[styles.container, { backgroundColor, paddingTop: insets.top }]}
+    >
+      <ThemedText type="title">내 바이닐 목록</ThemedText>
       {myVinyls.length > 0 ? (
         <FlatList
           style={{
             width: '100%',
             maxWidth: '100%',
+            flex: 1,
+            height: '100%',
           }}
           contentContainerStyle={styles.listContainer}
           data={myVinyls}
@@ -85,11 +95,11 @@ export default function Index() {
                 style={styles.image}
                 contentFit="cover"
               />
-              <View>
-                <Text>{item.title}</Text>
+              <ThemedView>
+                <ThemedText type="subtitle">{item.title}</ThemedText>
                 <Text>{item.artists[0].name}</Text>
                 {item.review && <Text>{item.review}</Text>}
-              </View>
+              </ThemedView>
               {/* <Pressable onPress={() => handleDeleteVinyl(index)}>
                 <Text>삭제</Text>
               </Pressable> */}
@@ -104,7 +114,7 @@ export default function Index() {
       )}
 
       <WriteButton />
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -113,12 +123,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingTop: 10,
   },
   listContainer: {
-    flex: 1,
     width: '100%',
     maxWidth: '100%',
     paddingHorizontal: 8,
+    paddingBottom: 50,
   },
   columnWrapper: {
     gap: 8,
