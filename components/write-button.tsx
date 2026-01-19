@@ -22,11 +22,11 @@ export default function WriteButton() {
 const styles = StyleSheet.create({
   button: {
     position: 'absolute',
-    bottom: 30,
+    bottom: 20,
     left: '50%',
     transform: [{ translateX: -80 }],
     width: 160,
-    height: 60,
+    height: 50,
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',

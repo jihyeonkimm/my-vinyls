@@ -46,7 +46,6 @@ export default function StarRating({
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    gap: 2,
   },
   starButton: {
     width: 30,

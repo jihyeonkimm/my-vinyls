@@ -69,7 +69,10 @@ export default function Index() {
 
   return (
     <View
-      style={[styles.container, { backgroundColor, paddingTop: insets.top }]}
+      style={[
+        styles.container,
+        { backgroundColor, paddingTop: insets.top + 10 },
+      ]}
     >
       <ThemedText type="title">내 바이닐 목록</ThemedText>
       {myVinyls.length > 0 ? (
@@ -96,8 +99,14 @@ export default function Index() {
                 contentFit="cover"
               />
               <ThemedView>
-                <ThemedText type="subtitle">{item.title}</ThemedText>
-                <Text>{item.artists[0].name}</Text>
+                <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  style={styles.vinylTitle}
+                >
+                  {item.title}
+                </Text>
+                <Text style={styles.artistText}>{item.artists[0].name}</Text>
                 {item.review && <Text>{item.review}</Text>}
               </ThemedView>
               {/* <Pressable onPress={() => handleDeleteVinyl(index)}>
@@ -122,19 +131,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-    paddingTop: 10,
+    paddingTop: 20,
   },
   listContainer: {
     width: '100%',
     maxWidth: '100%',
-    paddingHorizontal: 8,
-    paddingBottom: 50,
+    paddingHorizontal: 10,
+    paddingBottom: 80,
   },
   columnWrapper: {
     gap: 8,
     paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingVertical: 10,
   },
   itemContainer: {
     flex: 1,
@@ -143,5 +151,15 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     aspectRatio: 1,
+    borderRadius: 10,
+  },
+  vinylTitle: {
+    marginTop: 6,
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  artistText: {
+    marginTop: 4,
+    color: '#666',
   },
 });

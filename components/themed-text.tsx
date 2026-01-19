@@ -32,6 +32,8 @@ export function ThemedText({
         type === 'title' ? styles.title : undefined,
         type === 'defaultSemiBold' ? styles.defaultSemiBold : undefined,
         type === 'subtitle' ? styles.subtitle : undefined,
+        type === 'sub' ? styles.sub : undefined,
+        type === 'small' ? styles.small : undefined,
         type === 'link' ? styles.link : undefined,
         style,
       ]}
@@ -44,6 +46,7 @@ const styles = StyleSheet.create({
   default: {
     fontSize: 16,
     lineHeight: 24,
+    letterSpacing: -0.1,
   },
   defaultSemiBold: {
     fontSize: 16,
@@ -52,8 +55,11 @@ const styles = StyleSheet.create({
     letterSpacing: -0.1,
   },
   title: {
+    paddingHorizontal: 20,
+    paddingVertical: 8,
     fontSize: 32,
     fontWeight: 'bold',
+    textAlign: 'left',
     lineHeight: 34,
     letterSpacing: -0.5,
   },
@@ -67,9 +73,9 @@ const styles = StyleSheet.create({
     color: '#E04E15',
   },
   sub: {
-    fontSize: 14,
+    fontSize: 16,
     lineHeight: 22,
-    color: '#9e9e9e',
+    color: '#666',
   },
   small: {
     fontSize: 12,

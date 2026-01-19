@@ -69,6 +69,7 @@ export interface VinylDetail {
     position: string;
     title: string;
     duration: string;
+    type_?: string;
   }[];
   images?: {
     type: string;
@@ -79,4 +80,15 @@ export interface VinylDetail {
   rating?: number;
   review?: string;
   released?: string;
+  labels?: {
+    name: string;
+    catno: string;
+    id: number;
+  }[];
+  formats?: {
+    name: string;
+    qty: string;
+    descriptions: string[];
+    text: string;
+  }[];
 }

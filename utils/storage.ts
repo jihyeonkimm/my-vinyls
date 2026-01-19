@@ -37,3 +37,26 @@ export const deleteVinyl = async (index: number): Promise<boolean> => {
     throw new Error('바이닐 삭제 실패');
   }
 };
+
+export const updateVinyl = async (
+  id: number,
+  updates: Partial<MyVinyl>
+): Promise<boolean> => {
+  try {
+    const vinyls = await getMyVinyls();
+    const index = vinyls.findIndex(vinyl => vinyl.id === id);
+
+    if (index === -1) {
+      throw new Error('바이닐을 찾을 수 없습니다');
+    }
+
+    const updatedVinyls = [...vinyls];
+    updatedVinyls[index] = { ...updatedVinyls[index], ...updates };
+
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedVinyls));
+    return true;
+  } catch (error) {
+    console.error('바이닐 업데이트 실패', error);
+    throw new Error('바이닐 업데이트 실패');
+  }
+};
