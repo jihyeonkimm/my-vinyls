@@ -8,7 +8,7 @@ import { useThemeColor } from '@/hooks/use-theme-color';
 import { getMyVinyls, updateVinyl } from '@/utils/storage';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -28,6 +28,9 @@ export default function VinylInfoPage() {
   const [isEditingReview, setIsEditingReview] = useState(false);
   const [tempReview, setTempReview] = useState('');
   const backgroundColor = useThemeColor({}, 'background');
+  const tintColor = useThemeColor({}, 'tint');
+  const scrollViewRef = useRef<ScrollView>(null);
+  const reviewInputRef = useRef<View>(null);
 
   const loadVinylDetail = async () => {
     try {
@@ -75,6 +78,17 @@ export default function VinylInfoPage() {
     }
   };
 
+  const handleReviewInputFocus = () => {
+    setTimeout(() => {
+      reviewInputRef.current?.measure((x, y, width, height, pageX, pageY) => {
+        scrollViewRef.current?.scrollTo({
+          y: y,
+          animated: true,
+        });
+      });
+    }, 100);
+  };
+
   useEffect(() => {
     if (id) {
       loadVinylDetail();
@@ -107,7 +121,11 @@ export default function VinylInfoPage() {
         style={{ flex: 1 }}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
       >
-        <ScrollView style={styles.container}>
+        <ScrollView
+          ref={scrollViewRef}
+          style={styles.container}
+          keyboardShouldPersistTaps="handled"
+        >
           <ThemedView style={styles.infoContainer}>
             <View style={styles.imageContainer}>
               <Image
@@ -172,7 +190,7 @@ export default function VinylInfoPage() {
                 vinylInfo.labels.length > 0 &&
                 vinylInfo.labels.map((label, index) => (
                   <ThemedText
-                    key={`${label.catno} - ${label.id} - ${label.index}`}
+                    key={`${label.catno} - ${label.id} - ${index}`}
                     type="small"
                   >
                     {label.name} - {label.catno}
@@ -182,21 +200,23 @@ export default function VinylInfoPage() {
             </View>
             <View style={styles.formatContainer}>
               <ThemedText type="small">
-                형식 : {vinylInfo.formats[0].name},
+                형식 : {vinylInfo.formats?.[0].name},
               </ThemedText>
-              {vinylInfo.formats[0].descriptions.map((desc, index) => (
+              {vinylInfo.formats?.[0].descriptions.map((desc, index) => (
                 <ThemedText key={index} type="small">
                   {desc}
                   {index < vinylInfo.formats[0].descriptions.length - 1 ||
-                  vinylInfo.formats[0].text
+                  vinylInfo.formats?.[0].text
                     ? ','
                     : ''}
                 </ThemedText>
               ))}
-              <ThemedText type="small">{vinylInfo.formats[0].text}</ThemedText>
+              <ThemedText type="small">
+                {vinylInfo.formats?.[0].text}
+              </ThemedText>
             </View>
           </View>
-          <View style={styles.myReviewContainer}>
+          <View style={styles.myReviewContainer} ref={reviewInputRef}>
             <View>
               <ThemedText type="defaultSemiBold">나의 별점</ThemedText>
               <StarRating
@@ -220,8 +240,17 @@ export default function VinylInfoPage() {
                 editable={isEditingReview}
                 multiline
                 placeholder="리뷰를 작성해주세요"
+                onFocus={handleReviewInputFocus}
               />
             </View>
+            <Pressable
+              style={[styles.deleteButton, { backgroundColor: tintColor }]}
+              onPress={() => {}}
+            >
+              <ThemedText type="defaultSemiBold" style={styles.buttonText}>
+                삭제하기
+              </ThemedText>
+            </Pressable>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -327,7 +356,7 @@ const styles = StyleSheet.create({
   },
   myReviewContainer: {
     marginTop: 20,
-    paddingBottom: 40,
+    paddingBottom: 400,
     gap: 10,
   },
   reviewHeader: {
@@ -347,5 +376,15 @@ const styles = StyleSheet.create({
     padding: 12,
     minHeight: 100,
     textAlignVertical: 'top',
+  },
+  deleteButton: {
+    width: 160,
+    height: 50,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#ffffff',
   },
 });

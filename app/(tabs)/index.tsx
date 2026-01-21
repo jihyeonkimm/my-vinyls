@@ -107,7 +107,6 @@ export default function Index() {
                   {item.title}
                 </Text>
                 <Text style={styles.artistText}>{item.artists[0].name}</Text>
-                {item.review && <Text>{item.review}</Text>}
               </ThemedView>
               {/* <Pressable onPress={() => handleDeleteVinyl(index)}>
                 <Text>삭제</Text>
