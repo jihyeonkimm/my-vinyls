@@ -1,6 +1,7 @@
 import { VinylDetail } from '@/api/types';
 import { getVinylDetails } from '@/api/vinyl';
 import StarRating from '@/components/star-rating';
+import { SubHeader } from '@/components/sub-header';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Icon } from '@/components/ui/icon';
@@ -15,12 +16,15 @@ import {
   Linking,
   Platform,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from 'react-native';
+import Animated, {
+  useAnimatedRef,
+  useScrollOffset,
+} from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function VinylInfoPage() {
@@ -31,8 +35,9 @@ export default function VinylInfoPage() {
   const [tempReview, setTempReview] = useState('');
   const backgroundColor = useThemeColor({}, 'background');
   const tintColor = useThemeColor({}, 'tint');
-  const scrollViewRef = useRef<ScrollView>(null);
+  const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
   const reviewInputRef = useRef<View>(null);
+  const scrollOffset = useScrollOffset(scrollViewRef);
 
   const loadVinylDetail = async () => {
     try {
@@ -149,22 +154,14 @@ export default function VinylInfoPage() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor }}>
-      <View>
-        <Pressable onPress={() => router.back()}>
-          <Icon
-            name="arrow-back"
-            size={28}
-            style={{ marginLeft: 20, marginTop: 10 }}
-          />
-        </Pressable>
-      </View>
+    <View style={{ flex: 1, backgroundColor }}>
+      <SubHeader scrollOffset={scrollOffset} />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
       >
-        <ScrollView
+        <Animated.ScrollView
           ref={scrollViewRef}
           style={styles.container}
           keyboardShouldPersistTaps="handled"
@@ -309,9 +306,9 @@ export default function VinylInfoPage() {
               </Pressable>
             </View>
           </View>
-        </ScrollView>
+        </Animated.ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }
 

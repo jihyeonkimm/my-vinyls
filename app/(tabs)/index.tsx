@@ -1,6 +1,6 @@
 import { VinylDetail } from '@/api/types';
 import { getVinylDetails } from '@/api/vinyl';
-import { ThemedText } from '@/components/themed-text';
+import { PageHeader } from '@/components/page-header';
 import { ThemedView } from '@/components/themed-view';
 import WriteButton from '@/components/write-button';
 import { useThemeColor } from '@/hooks/use-theme-color';
@@ -9,14 +9,18 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import Animated, {
+  useAnimatedRef,
+  useScrollOffset,
+} from 'react-native-reanimated';
 
 export default function Index() {
   const [myVinyls, setMyVinyls] = useState<VinylDetail[]>([]);
   const router = useRouter();
-  const insets = useSafeAreaInsets();
   const backgroundColor = useThemeColor({}, 'background');
+  const scrollRef = useAnimatedRef<Animated.FlatList<VinylDetail>>();
+  const scrollOffset = useScrollOffset(scrollRef);
 
   const loadMyVinyls = async () => {
     const savedVinyls = await getMyVinyls(); // AsyncStorage에 저장된 내 바이닐
@@ -47,15 +51,11 @@ export default function Index() {
   );
 
   return (
-    <View
-      style={[
-        styles.container,
-        { backgroundColor, paddingTop: insets.top + 10 },
-      ]}
-    >
-      <ThemedText type="title">내 바이닐 목록</ThemedText>
+    <View style={[styles.container, { backgroundColor }]}>
+      <PageHeader title="내 바이닐 목록" scrollOffset={scrollOffset} />
       {myVinyls.length > 0 ? (
-        <FlatList
+        <Animated.FlatList
+          ref={scrollRef}
           style={{
             width: '100%',
             maxWidth: '100%',
@@ -67,6 +67,7 @@ export default function Index() {
           keyExtractor={(item, index) => `${item.id}-${index}`}
           numColumns={2}
           columnWrapperStyle={styles.columnWrapper}
+          scrollEventThrottle={16}
           renderItem={({ item, index }) => (
             <Pressable
               style={styles.itemContainer}
@@ -87,9 +88,6 @@ export default function Index() {
                 </Text>
                 <Text style={styles.artistText}>{item.artists[0].name}</Text>
               </ThemedView>
-              {/* <Pressable onPress={() => handleDeleteVinyl(index)}>
-                <Text>삭제</Text>
-              </Pressable> */}
             </Pressable>
           )}
         />
@@ -109,7 +107,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    paddingTop: 20,
   },
   listContainer: {
     width: '100%',
