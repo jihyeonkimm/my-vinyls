@@ -5,12 +5,14 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Icon } from '@/components/ui/icon';
 import { useThemeColor } from '@/hooks/use-theme-color';
-import { getMyVinyls, updateVinyl } from '@/utils/storage';
+import { deleteVinyl, getMyVinyls, updateVinyl } from '@/utils/storage';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
+  Linking,
   Platform,
   Pressable,
   ScrollView,
@@ -87,6 +89,47 @@ export default function VinylInfoPage() {
         });
       });
     }, 100);
+  };
+
+  const handleDeleteVinyl = async () => {
+    Alert.alert(
+      '삭제하기',
+      '이 바이닐을 내 바이닐 목록에서 삭제하시겠어요?',
+      [
+        {
+          text: '취소',
+          style: 'cancel',
+        },
+        {
+          text: '확인',
+          onPress: async () => {
+            try {
+              const success = await deleteVinyl(Number(id));
+              if (success) {
+                Alert.alert('알림', '삭제되었습니다.', [
+                  {
+                    text: '확인',
+                    onPress: () => router.replace('/'),
+                  },
+                ]);
+              }
+            } catch (error) {
+              console.error('바이닐 삭제 중 오류 발생', error);
+              Alert.alert('오류', '바이닐 삭제에 실패했습니다.');
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  const handleOpenDiscogs = async () => {
+    const discogsUrl = `https://www.discogs.com/release/${id}`;
+    const canOpen = await Linking.canOpenURL(discogsUrl);
+    if (canOpen) {
+      await Linking.openURL(discogsUrl);
+    }
   };
 
   useEffect(() => {
@@ -205,7 +248,7 @@ export default function VinylInfoPage() {
               {vinylInfo.formats?.[0].descriptions.map((desc, index) => (
                 <ThemedText key={index} type="small">
                   {desc}
-                  {index < vinylInfo.formats[0].descriptions.length - 1 ||
+                  {index < vinylInfo.formats?.[0].descriptions.length - 1 ||
                   vinylInfo.formats?.[0].text
                     ? ','
                     : ''}
@@ -243,14 +286,28 @@ export default function VinylInfoPage() {
                 onFocus={handleReviewInputFocus}
               />
             </View>
-            <Pressable
-              style={[styles.deleteButton, { backgroundColor: tintColor }]}
-              onPress={() => {}}
-            >
-              <ThemedText type="defaultSemiBold" style={styles.buttonText}>
-                삭제하기
-              </ThemedText>
-            </Pressable>
+            <View style={styles.buttonContainer}>
+              <Pressable
+                style={styles.discogsButton}
+                onPress={handleOpenDiscogs}
+              >
+                <Icon name="launch" size={18} color="#fff" />
+                <ThemedText
+                  type="defaultSemiBold"
+                  style={styles.discogsButtonText}
+                >
+                  Discogs에서 보기
+                </ThemedText>
+              </Pressable>
+              <Pressable
+                style={styles.deleteButton}
+                onPress={handleDeleteVinyl}
+              >
+                <ThemedText type="default" style={styles.deleteButtonText}>
+                  삭제하기
+                </ThemedText>
+              </Pressable>
+            </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -356,7 +413,6 @@ const styles = StyleSheet.create({
   },
   myReviewContainer: {
     marginTop: 20,
-    paddingBottom: 400,
     gap: 10,
   },
   reviewHeader: {
@@ -377,14 +433,37 @@ const styles = StyleSheet.create({
     minHeight: 100,
     textAlignVertical: 'top',
   },
-  deleteButton: {
-    width: 160,
-    height: 50,
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
+  buttonContainer: {
+    marginTop: 20,
+    paddingBottom: 40,
   },
-  buttonText: {
-    color: '#ffffff',
+  deleteButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 50,
+    gap: 4,
+    marginTop: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 50,
+  },
+  deleteButtonText: {
+    color: '#666',
+  },
+  discogsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 50,
+    gap: 4,
+    marginTop: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 50,
+    backgroundColor: '#f3571a',
+  },
+  discogsButtonText: {
+    color: '#fff',
   },
 });

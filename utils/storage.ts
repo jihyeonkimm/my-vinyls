@@ -26,10 +26,10 @@ export const saveVinyl = async (vinyl: MyVinyl): Promise<boolean> => {
   }
 };
 
-export const deleteVinyl = async (index: number): Promise<boolean> => {
+export const deleteVinyl = async (id: number): Promise<boolean> => {
   try {
     const vinyls = await getMyVinyls();
-    const newVinyls = vinyls.filter((_, i) => i !== index);
+    const newVinyls = vinyls.filter(vinyl => vinyl.id !== id);
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newVinyls));
     return true;
   } catch (error) {

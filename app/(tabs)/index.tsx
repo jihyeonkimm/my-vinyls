@@ -4,19 +4,12 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import WriteButton from '@/components/write-button';
 import { useThemeColor } from '@/hooks/use-theme-color';
-import { deleteVinyl, getMyVinyls } from '@/utils/storage';
+import { getMyVinyls } from '@/utils/storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import {
-  Alert,
-  FlatList,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Index() {
@@ -41,20 +34,6 @@ export default function Index() {
     );
 
     setMyVinyls(vinylsDetails);
-  };
-
-  const handleDeleteVinyl = async (index: number) => {
-    try {
-      const deleteMyVinyl = await deleteVinyl(index);
-      if (deleteMyVinyl) {
-        console.log('바이닐 삭제 성공');
-        Alert.alert('알림', '바이닐이 삭제되었습니다.');
-        loadMyVinyls();
-      }
-    } catch (error) {
-      console.error('바이닐 삭제 중 오류 발생', error);
-      Alert.alert('오류', '바이닐 삭제에 실패했습니다.');
-    }
   };
 
   const handleMoveToInfoPage = (id: number) => {
