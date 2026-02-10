@@ -92,7 +92,7 @@ export default function Index() {
           )}
         />
       ) : (
-        <View>
+        <View style={styles.emptyContainer}>
           <Text>아직 등록된 내 바이닐이 없어요.</Text>
           <Text>내 바이닐을 추가해보세요!</Text>
         </View>
@@ -136,5 +136,10 @@ const styles = StyleSheet.create({
   artistText: {
     marginTop: 4,
     color: '#666',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

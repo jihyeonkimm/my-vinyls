@@ -9,13 +9,14 @@ import {
   ActivityIndicator,
   Alert,
   FlatList,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function AddVinyl() {
   const [searchQuery, setSearchQuery] = useState<string>(''); // 검색어 상태
@@ -127,14 +128,13 @@ export default function AddVinyl() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <View style={styles.container}>
-        <Text style={styles.title}>바이닐 추가</Text>
-        <Pressable style={styles.closeButton} onPress={() => router.back()}>
-          <Text>닫기</Text>
-        </Pressable>
-
-        <View>
+    <View style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.contentContainer}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
+        <View style={styles.inputContainer}>
           <TextInput
             style={styles.searchInput}
             placeholder="검색어를 입력해주세요."
@@ -144,10 +144,6 @@ export default function AddVinyl() {
           />
         </View>
 
-        {loading && <ActivityIndicator size="large" color="#0000ff" />}
-
-        {error && <Text style={{ color: 'red' }}>{error}</Text>}
-
         {searchResults.length > 0 && (
           <Text style={styles.resultCount}>
             검색 결과: {searchResults.length}개
@@ -156,44 +152,46 @@ export default function AddVinyl() {
           </Text>
         )}
 
-        {searchResults.length > 0 && (
-          <FlatList
-            style={styles.listContainer}
-            data={searchResults}
-            keyExtractor={(item, index) => `${item.id} - ${index}`}
-            renderItem={({ item, index }) => (
-              <Pressable
-                style={styles.resultItem}
-                onPress={() => setSelectedVinyl(item)}
-              >
-                <Image
-                  style={styles.resultImage}
-                  source={{ uri: item.cover_image }}
-                  contentFit="cover"
-                  transition={1000}
-                />
-                <View>
-                  <Text style={styles.resultTitle}>{index + 1}</Text>
-                  <Text style={styles.resultTitle}>{item.title}</Text>
-                  <Text style={styles.resultTitle}>{item.genre}</Text>
-                  {item.style && item.style.length > 0 && (
-                    <Text style={styles.resultTitle}>{item.style}</Text>
-                  )}
-                  <View style={{ flexDirection: 'row', gap: 2 }}>
-                    <Text style={styles.resultTitle}>{item.year} / </Text>
-                    <Text style={styles.resultTitle}>{item.country}</Text>
+        <View style={{ flex: 1 }}>
+          {searchResults.length > 0 && (
+            <FlatList
+              style={styles.listContainer}
+              data={searchResults}
+              keyExtractor={(item, index) => `${item.id} - ${index}`}
+              renderItem={({ item, index }) => (
+                <Pressable
+                  style={styles.resultItem}
+                  onPress={() => setSelectedVinyl(item)}
+                >
+                  <Image
+                    style={styles.resultImage}
+                    source={{ uri: item.cover_image }}
+                    contentFit="cover"
+                    transition={1000}
+                  />
+                  <View>
+                    <Text style={styles.resultTitle}>{index + 1}</Text>
+                    <Text style={styles.resultTitle}>{item.title}</Text>
+                    <Text style={styles.resultTitle}>{item.genre}</Text>
+                    {item.style && item.style.length > 0 && (
+                      <Text style={styles.resultTitle}>{item.style}</Text>
+                    )}
+                    <View style={{ flexDirection: 'row', gap: 2 }}>
+                      <Text style={styles.resultTitle}>{item.year} / </Text>
+                      <Text style={styles.resultTitle}>{item.country}</Text>
+                    </View>
                   </View>
-                </View>
-              </Pressable>
-            )}
-            onEndReached={loadMore}
-            onEndReachedThreshold={0.5}
-            ListFooterComponent={
-              loadingMore ? <ActivityIndicator size="small" /> : null
-            }
-          />
-        )}
-      </View>
+                </Pressable>
+              )}
+              onEndReached={loadMore}
+              onEndReachedThreshold={0.5}
+              ListFooterComponent={
+                loadingMore ? <ActivityIndicator size="small" /> : null
+              }
+            />
+          )}
+        </View>
+      </KeyboardAvoidingView>
 
       <View style={styles.selectedVinylContainer}>
         {selectedVinyl ? (
@@ -234,25 +232,21 @@ export default function AddVinyl() {
           <Text>바이닐을 선택해주세요.</Text>
         )}
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+  contentContainer: {
+    flex: 1,
+    paddingHorizontal: 20,
   },
-  closeButton: {
-    position: 'absolute',
-    top: 50,
-    right: 20,
-    padding: 10,
+  inputContainer: {
+    paddingVertical: 5,
   },
+  listContainer: {},
   searchInput: {
     borderWidth: 1,
     borderColor: '#ddd',
@@ -261,10 +255,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
   },
-  listContainer: {
-    flex: 1,
-    backgroundColor: '#f9f9f9',
-  },
   resultItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -272,11 +262,12 @@ const styles = StyleSheet.create({
     padding: 15,
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
+    backgroundColor: 'pink',
   },
   resultTitle: {
+    marginTop: 6,
+    fontWeight: 'bold',
     fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 5,
   },
   resultImage: {
     width: 60,
