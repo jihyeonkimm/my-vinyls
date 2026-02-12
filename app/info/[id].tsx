@@ -1,10 +1,10 @@
 import { VinylDetail } from '@/api/types';
 import { getVinylDetails } from '@/api/vinyl';
-import StarRating from '@/components/star-rating';
-import { SubHeader } from '@/components/sub-header';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
+import { SubHeader } from '@/components/layout/sub-header';
+import { ThemedText } from '@/components/layout/themed-text';
+import { ThemedView } from '@/components/layout/themed-view';
 import { Icon } from '@/components/ui/icon';
+import StarRating from '@/components/vinyl/star-rating';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { deleteVinyl, getMyVinyls, updateVinyl } from '@/utils/storage';
 import { Image } from 'expo-image';

@@ -1,5 +1,5 @@
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { Icon } from './ui/icon';
+import { Icon } from '../ui/icon';
 
 interface StarRatingProps {
   rating: number;

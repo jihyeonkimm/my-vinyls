@@ -1,7 +1,7 @@
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { useRouter } from 'expo-router';
 import { Platform, Pressable, StyleSheet } from 'react-native';
-import { ThemedText } from './themed-text';
+import { ThemedText } from '../layout/themed-text';
 
 export default function WriteButton() {
   const router = useRouter();
@@ -10,7 +10,7 @@ export default function WriteButton() {
   return (
     <Pressable
       style={[styles.button, { backgroundColor: tintColor }]}
-      onPress={() => router.push('/add-vinyl')}
+      onPress={() => router.push('/(tabs)/search')}
     >
       <ThemedText type="defaultSemiBold" style={styles.text}>
         내 바이닐 추가하기

@@ -1,8 +1,8 @@
 import { VinylDetail } from '@/api/types';
 import { getVinylDetails } from '@/api/vinyl';
-import { PageHeader } from '@/components/page-header';
-import { ThemedView } from '@/components/themed-view';
-import WriteButton from '@/components/write-button';
+import { PageHeader } from '@/components/layout/page-header';
+import { ThemedView } from '@/components/layout/themed-view';
+import WriteButton from '@/components/vinyl/write-button';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { getMyVinyls } from '@/utils/storage';
 import { useFocusEffect } from '@react-navigation/native';

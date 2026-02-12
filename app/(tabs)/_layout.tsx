@@ -24,6 +24,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="search"
+        options={{
+          title: '검색',
+          tabBarIcon: ({ color }) => (
+            <Icon name="search" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="wishlist"
         options={{
           title: '위시리스트',

@@ -1,4 +1,4 @@
-import { PageHeader } from '@/components/page-header';
+import { PageHeader } from '@/components/layout/page-header';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { StyleSheet, Text, View } from 'react-native';
 

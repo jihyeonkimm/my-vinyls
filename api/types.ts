@@ -53,6 +53,10 @@ export interface MyVinyl {
   review?: string;
 }
 
+export interface WishlistItem {
+  id: number;
+}
+
 export interface VinylDetail {
   id: number;
   year: string;

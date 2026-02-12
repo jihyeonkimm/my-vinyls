@@ -1,8 +1,9 @@
-import { MyVinyl } from '@/api/types';
+import { MyVinyl, WishlistItem } from '@/api/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // 내 바이닐 정보에 대한 고유한 키
 const STORAGE_KEY = '@my_vinyls';
+const WISHLIST_KEY = '@wishlist';
 
 export const getMyVinyls = async (): Promise<MyVinyl[]> => {
   try {
@@ -58,5 +59,39 @@ export const updateVinyl = async (
   } catch (error) {
     console.error('바이닐 업데이트 실패', error);
     throw new Error('바이닐 업데이트 실패');
+  }
+};
+
+export const getWishlist = async (): Promise<WishlistItem[]> => {
+  try {
+    const data = await AsyncStorage.getItem(WISHLIST_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch (error) {
+    console.error('위시리스트 불러오기 실패', error);
+    throw new Error('위시리스트 불러오기 실패');
+  }
+};
+
+export const saveWishlistItem = async (item: WishlistItem): Promise<boolean> => {
+  try {
+    const wishlist = await getWishlist();
+    const newWishlist = [...wishlist, item];
+    await AsyncStorage.setItem(WISHLIST_KEY, JSON.stringify(newWishlist));
+    return true;
+  } catch (error) {
+    console.error('위시리스트 저장 실패', error);
+    throw new Error('위시리스트 저장 실패');
+  }
+};
+
+export const deleteWishlistItem = async (id: number): Promise<boolean> => {
+  try {
+    const wishlist = await getWishlist();
+    const newWishlist = wishlist.filter(item => item.id !== id);
+    await AsyncStorage.setItem(WISHLIST_KEY, JSON.stringify(newWishlist));
+    return true;
+  } catch (error) {
+    console.error('위시리스트 삭제 실패', error);
+    throw new Error('위시리스트 삭제 실패');
   }
 };

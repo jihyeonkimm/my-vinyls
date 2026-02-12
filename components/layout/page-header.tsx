@@ -1,21 +1,23 @@
-import { useRouter } from 'expo-router';
-import { Pressable, StyleSheet } from 'react-native';
+import { ThemedText } from '@/components/layout/themed-text';
+import { useThemeColor } from '@/hooks/use-theme-color';
+import { StyleSheet } from 'react-native';
 import Animated, {
   interpolate,
   SharedValue,
   useAnimatedStyle,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Icon } from './ui/icon';
 
-interface SubHeaderProps {
+interface PageHeaderProps {
+  title: string;
   scrollOffset?: SharedValue<number>;
 }
 
-export function SubHeader({ scrollOffset }: SubHeaderProps) {
+export function PageHeader({ title, scrollOffset }: PageHeaderProps) {
   const insets = useSafeAreaInsets();
-  const router = useRouter();
+  const backgroundColor = useThemeColor({}, 'background');
 
+  // 스크롤 위치에 따른 border opacity 계산
   const animatedStyle = useAnimatedStyle(() => {
     if (!scrollOffset) {
       return {
@@ -34,21 +36,17 @@ export function SubHeader({ scrollOffset }: SubHeaderProps) {
 
   return (
     <Animated.View
-      style={[styles.container, { paddingTop: insets.top + 6 }, animatedStyle]}
+      style={[
+        styles.container,
+        { backgroundColor, paddingTop: insets.top + 6 },
+        animatedStyle,
+      ]}
     >
-      <Pressable onPress={() => router.back()}>
-        <Icon
-          name="arrow-back"
-          size={28}
-          style={{ marginLeft: 20, marginTop: 10 }}
-        />
-      </Pressable>
+      <ThemedText type="title">{title}</ThemedText>
     </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    paddingBottom: 10,
-  },
+  container: {},
 });

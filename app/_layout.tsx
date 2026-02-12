@@ -9,11 +9,14 @@ export default function RootLayout() {
     <>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="info/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="vinyl/[id]" options={{ headerShown: false }} />
         <Stack.Screen
-          name="add-vinyl"
+          name="add-review"
           options={{
             presentation: 'modal',
-            title: '바이닐 등록하기',
+            title: '바이닐 추가하기',
+            headerShadowVisible: false,
             headerStyle: {
               backgroundColor: '#f4f3f4',
             },
@@ -27,12 +30,11 @@ export default function RootLayout() {
                 onPress={() => router.back()}
                 style={{ paddingLeft: 2 }}
               >
-                <Text style={{ fontSize: 16 }}>취소</Text>
+                <Text style={{ fontSize: 16, color: '#757575' }}>취소</Text>
               </TouchableOpacity>
             ),
           }}
         />
-        <Stack.Screen name="info/[id]" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style="auto" />
     </>
