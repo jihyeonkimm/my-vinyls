@@ -13,6 +13,7 @@ interface InputProps extends TextInputProps {
   label?: string;
   containerStyle?: ViewStyle;
   showSearchIcon?: boolean;
+  onClear?: () => void;
 }
 
 export default function Input({
@@ -22,6 +23,7 @@ export default function Input({
   showSearchIcon = false,
   value,
   onChangeText,
+  onClear,
   ...props
 }: InputProps) {
   const showClearButton = !!value;
@@ -52,7 +54,10 @@ export default function Input({
         />
         {showClearButton && (
           <Pressable
-            onPress={() => onChangeText?.('')}
+            onPress={() => {
+              onChangeText?.('');
+              onClear?.();
+            }}
             style={styles.clearButton}
             hitSlop={8}
           >
@@ -77,7 +82,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     marginTop: 10,
     marginBottom: 10,
-    backgroundColor: '#e6e6e6',
+    backgroundColor: '#ededed',
   },
   leftIcon: {
     paddingLeft: 10,

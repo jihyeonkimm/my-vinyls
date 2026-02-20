@@ -24,6 +24,11 @@ export interface SearchResultItem {
   uri?: string;
   genre?: string[];
   country?: string;
+  label?: string[];
+  formats?: {
+    name: string;
+    text?: string;
+  }[];
 }
 
 export interface SearchResponse {

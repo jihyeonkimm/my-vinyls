@@ -89,6 +89,14 @@ export default function SearchScreen() {
     router.push(`/vinyl/${item.id}`);
   };
 
+  const handleClearSearch = () => {
+    setSearchResults([]);
+    setPagination(null);
+    setHasMore(true);
+    setCurrentPage(1);
+    setError(null);
+  };
+
   return (
     <Pressable
       style={[styles.container, { backgroundColor }]}
@@ -99,8 +107,14 @@ export default function SearchScreen() {
         <Input
           placeholder="아티스트, 앨범명으로 검색"
           value={searchQuery}
-          onChangeText={setSearchQuery}
+          onChangeText={text => {
+            setSearchQuery(text);
+            if (text.trim() === '') {
+              handleClearSearch();
+            }
+          }}
           onSubmitEditing={() => handleSearch()}
+          onClear={handleClearSearch}
           returnKeyType="search"
           showSearchIcon
         />
@@ -147,6 +161,12 @@ export default function SearchScreen() {
           />
         </>
       )}
+
+      {!loading && !error && searchResults.length === 0 && (
+        <View style={styles.noContentContainer}>
+          <ThemedText type="default">검색 결과가 없습니다.</ThemedText>
+        </View>
+      )}
     </Pressable>
   );
 }
@@ -185,5 +205,10 @@ const styles = StyleSheet.create({
   },
   footerLoader: {
     paddingVertical: 16,
+  },
+  noContentContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

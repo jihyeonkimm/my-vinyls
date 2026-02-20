@@ -10,6 +10,7 @@ import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   Linking,
   Platform,
@@ -22,7 +23,6 @@ import Animated, {
   useAnimatedRef,
   useScrollOffset,
 } from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function VinylDetailPage() {
   const { id } = useLocalSearchParams();
@@ -30,6 +30,7 @@ export default function VinylDetailPage() {
   const [vinylInfo, setVinylInfo] = useState<VinylDetail | null>(null);
   const [isInMyVinyls, setIsInMyVinyls] = useState(false);
   const [isInWishlist, setIsInWishlist] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const backgroundColor = useThemeColor({}, 'background');
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
@@ -40,6 +41,7 @@ export default function VinylDetailPage() {
 
     const load = async () => {
       try {
+        setLoading(true);
         const [detail, myVinyls, wishlist] = await Promise.all([
           getVinylDetails(Number(id)),
           getMyVinyls(),
@@ -50,6 +52,8 @@ export default function VinylDetailPage() {
         setIsInWishlist(wishlist.some(w => w.id === Number(id)));
       } catch (error) {
         console.error(error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -77,14 +81,25 @@ export default function VinylDetailPage() {
     if (canOpen) await Linking.openURL(url);
   };
 
+  if (loading) {
+    return (
+      <View style={{ flex: 1, backgroundColor }}>
+        <SubHeader scrollOffset={scrollOffset} />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" />
+        </View>
+      </View>
+    );
+  }
+
   if (!vinylInfo) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor }}>
-        <SubHeader />
+      <View style={{ flex: 1, backgroundColor }}>
+        <SubHeader scrollOffset={scrollOffset} />
         <View style={styles.loadingContainer}>
-          <Text>Loading...</Text>
+          <Text>바이닐 정보가 없습니다.</Text>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
@@ -176,7 +191,9 @@ export default function VinylDetailPage() {
             disabled={isInMyVinyls}
           >
             <ThemedText type="defaultSemiBold" style={styles.primaryButtonText}>
-              {isInMyVinyls ? '이미 내 바이닐에 있어요' : '내 바이닐에 추가하기'}
+              {isInMyVinyls
+                ? '이미 내 바이닐에 있어요'
+                : '내 바이닐에 추가하기'}
             </ThemedText>
           </Pressable>
 
@@ -192,7 +209,9 @@ export default function VinylDetailPage() {
               type="defaultSemiBold"
               style={styles.secondaryButtonText}
             >
-              {isInWishlist ? '위시리스트에 담겨있어요' : '위시리스트에 추가하기'}
+              {isInWishlist
+                ? '위시리스트에 담겨있어요'
+                : '위시리스트에 추가하기'}
             </ThemedText>
           </Pressable>
 
@@ -203,6 +222,7 @@ export default function VinylDetailPage() {
             </ThemedText>
           </Pressable>
         </View>
+        <View></View>
       </Animated.ScrollView>
     </View>
   );

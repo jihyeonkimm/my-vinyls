@@ -18,7 +18,7 @@ export default function RootLayout() {
             title: '바이닐 추가하기',
             headerShadowVisible: false,
             headerStyle: {
-              backgroundColor: '#f4f3f4',
+              backgroundColor: '#ffffff',
             },
             headerTitleStyle: {
               fontWeight: 'bold',

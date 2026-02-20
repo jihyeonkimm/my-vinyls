@@ -47,7 +47,10 @@ export default function AddReviewModal() {
       router.replace('/');
     } catch (error) {
       console.error('바이닐 추가 실패:', error);
-      Alert.alert('오류', '바이닐을 추가하는 데 실패했습니다. 다시 시도해주세요.');
+      Alert.alert(
+        '오류',
+        '바이닐을 추가하는 데 실패했습니다. 다시 시도해주세요.'
+      );
     }
   };
 
@@ -70,11 +73,11 @@ export default function AddReviewModal() {
 
         <View style={styles.section}>
           <ThemedText type="defaultSemiBold" style={styles.label}>
-            감상
+            리뷰
           </ThemedText>
           <TextInput
             style={styles.reviewInput}
-            placeholder="바이닐에 대한 감상을 남겨주세요. (선택)"
+            placeholder="바이닐에 대한 리뷰를 남겨주세요. (선택)"
             value={reviewText}
             onChangeText={setReviewText}
             multiline

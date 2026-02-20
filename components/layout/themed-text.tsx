@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'left',
     lineHeight: 34,
-    letterSpacing: -0.5,
+    letterSpacing: -0.7,
   },
   subtitle: {
     fontSize: 20,
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.2,
   },
   sub: {
-    fontSize: 16,
+    fontSize: 14,
     lineHeight: 22,
     color: '#666',
     letterSpacing: -0.2,
