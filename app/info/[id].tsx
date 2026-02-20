@@ -2,23 +2,22 @@ import { VinylDetail } from '@/api/types';
 import { getVinylDetails } from '@/api/vinyl';
 import { SubHeader } from '@/components/layout/sub-header';
 import { ThemedText } from '@/components/layout/themed-text';
-import { ThemedView } from '@/components/layout/themed-view';
-import { Icon } from '@/components/ui/icon';
-import StarRating from '@/components/vinyl/star-rating';
+import DiscogsButton from '@/components/ui/discogs-button';
+import VinylMainInfo from '@/components/vinyl/vinyl-main-info';
+import VinylMoreInfo from '@/components/vinyl/vinyl-more-info';
+import VinylMyReview from '@/components/vinyl/vinyl-my-review';
+import VinylTracklist from '@/components/vinyl/vinyl-tracklist';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { deleteVinyl, getMyVinyls, updateVinyl } from '@/utils/storage';
-import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   KeyboardAvoidingView,
-  Linking,
   Platform,
   Pressable,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 import Animated, {
@@ -129,14 +128,6 @@ export default function VinylInfoPage() {
     );
   };
 
-  const handleOpenDiscogs = async () => {
-    const discogsUrl = `https://www.discogs.com/release/${id}`;
-    const canOpen = await Linking.canOpenURL(discogsUrl);
-    if (canOpen) {
-      await Linking.openURL(discogsUrl);
-    }
-  };
-
   useEffect(() => {
     if (id) {
       loadVinylDetail();
@@ -166,136 +157,25 @@ export default function VinylInfoPage() {
           style={styles.container}
           keyboardShouldPersistTaps="handled"
         >
-          <ThemedView style={styles.infoContainer}>
-            <View style={styles.imageContainer}>
-              <Image
-                source={{ uri: vinylInfo.images?.[0].uri }}
-                contentFit="cover"
-                style={styles.image}
-              />
-            </View>
-            <Text>{vinylInfo.id}</Text>
-            <ThemedText
-              type="subtitle"
-              style={{ textAlign: 'center', marginBottom: 6 }}
-            >
-              {vinylInfo.title}
-            </ThemedText>
-            <ThemedText type="sub" style={{ color: '#f3571a' }}>
-              {vinylInfo.artists?.[0].name}
-            </ThemedText>
-            <View style={styles.subInfoContainer}>
-              <ThemedText type="small">{vinylInfo.year} •</ThemedText>
-              <ThemedText type="small">{vinylInfo.country} •</ThemedText>
-              {vinylInfo.genres?.map((genre, index) => (
-                <View key={`${index} - ${genre}`} style={styles.genreContainer}>
-                  <ThemedText type="small">{genre}</ThemedText>
-                </View>
-              ))}
-            </View>
-          </ThemedView>
-          <View style={styles.tracklistContainer}>
-            {vinylInfo.tracklist.map((track, index) => {
-              const isLastItem = index === vinylInfo.tracklist.length - 1;
-              return (
-                <View key={`${index} - ${track.position}`} style={styles.track}>
-                  <View style={styles.trackTitle}>
-                    <ThemedText type="sub" style={styles.trackPositionText}>
-                      {track.position}
-                    </ThemedText>
-                    <ThemedText
-                      type="default"
-                      style={[
-                        track.type_ === 'heading'
-                          ? styles.headingText
-                          : styles.trackTitleText,
-                        isLastItem && { borderBottomWidth: 0 },
-                      ]}
-                      numberOfLines={1}
-                      ellipsizeMode="tail"
-                    >
-                      {track.title}
-                    </ThemedText>
-                  </View>
-                  {/* <ThemedText>{track.duration}</ThemedText> */}
-                </View>
-              );
-            })}
-          </View>
-          <View style={styles.moreInfoContainer}>
-            <ThemedText type="small">발매일 : {vinylInfo.released}</ThemedText>
-            <View style={styles.labelsContainer}>
-              <ThemedText type="small">레이블 :</ThemedText>
-              {vinylInfo.labels &&
-                vinylInfo.labels.length > 0 &&
-                vinylInfo.labels.map((label, index) => (
-                  <ThemedText
-                    key={`${label.catno} - ${label.id} - ${index}`}
-                    type="small"
-                  >
-                    {label.name} - {label.catno}
-                    {index < vinylInfo.labels!.length - 1 ? ',' : ''}
-                  </ThemedText>
-                ))}
-            </View>
-            <View style={styles.formatContainer}>
-              <ThemedText type="small">
-                형식 : {vinylInfo.formats?.[0].name},
-              </ThemedText>
-              {vinylInfo.formats?.[0].descriptions.map((desc, index) => (
-                <ThemedText key={index} type="small">
-                  {desc}
-                  {index < vinylInfo.formats?.[0].descriptions.length - 1 ||
-                  vinylInfo.formats?.[0].text
-                    ? ','
-                    : ''}
-                </ThemedText>
-              ))}
-              <ThemedText type="small">
-                {vinylInfo.formats?.[0].text}
-              </ThemedText>
-            </View>
-          </View>
-          <View style={styles.myReviewContainer} ref={reviewInputRef}>
-            <View>
-              <ThemedText type="defaultSemiBold">나의 별점</ThemedText>
-              <StarRating
-                rating={vinylInfo.rating || 0}
-                onRatingChange={handleRatingChange}
-              />
-            </View>
-            <View>
-              <View style={styles.reviewHeader}>
-                <ThemedText type="defaultSemiBold">나의 리뷰</ThemedText>
-                <Pressable onPress={handleEditReviewToggle}>
-                  <ThemedText type="default" style={styles.editButton}>
-                    {isEditingReview ? '저장' : '수정'}
-                  </ThemedText>
-                </Pressable>
-              </View>
-              <TextInput
-                style={styles.reviewInput}
-                value={isEditingReview ? tempReview : vinylInfo.review}
-                onChangeText={setTempReview}
-                editable={isEditingReview}
-                multiline
-                placeholder="리뷰를 작성해주세요"
-                onFocus={handleReviewInputFocus}
-              />
-            </View>
+          <VinylMainInfo vinylInfo={vinylInfo} />
+
+          <VinylTracklist tracklist={vinylInfo.tracklist} />
+
+          <VinylMoreInfo moreInfo={vinylInfo} />
+
+          <View ref={reviewInputRef}>
+            <VinylMyReview
+              myReview={vinylInfo}
+              onRatingChange={handleRatingChange}
+              onToggle={handleEditReviewToggle}
+              onInputFocus={handleReviewInputFocus}
+              isEditingReview={isEditingReview}
+              tempReview={tempReview}
+              setTempReview={setTempReview}
+            />
+
             <View style={styles.buttonContainer}>
-              <Pressable
-                style={styles.discogsButton}
-                onPress={handleOpenDiscogs}
-              >
-                <Icon name="launch" size={18} color="#fff" />
-                <ThemedText
-                  type="defaultSemiBold"
-                  style={styles.discogsButtonText}
-                >
-                  Discogs에서 보기
-                </ThemedText>
-              </Pressable>
+              <DiscogsButton vinylId={Number(id)} />
               <Pressable
                 style={styles.deleteButton}
                 onPress={handleDeleteVinyl}
@@ -318,118 +198,6 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 20,
   },
-  infoContainer: {
-    alignItems: 'center',
-  },
-  imageContainer: {
-    width: 230,
-    height: 230,
-    borderRadius: 10,
-    marginBottom: 20,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#949494',
-        shadowOpacity: 0.5,
-        shadowOffset: {
-          width: 0,
-          height: 6,
-        },
-        shadowRadius: 15,
-      },
-      android: {
-        shadowColor: '#949494',
-        elevation: 8,
-      },
-    }),
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 10,
-  },
-  subInfoContainer: {
-    flexDirection: 'row',
-    gap: 4,
-    marginTop: 4,
-  },
-  tracklistContainer: {
-    marginTop: 20,
-    width: '100%',
-    maxWidth: '100%',
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: '#eaeaea',
-  },
-  track: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    maxWidth: '100%',
-    paddingHorizontal: 4,
-  },
-  trackTitle: {
-    flexDirection: 'row',
-    gap: 6,
-    width: '100%',
-    maxWidth: '100%',
-  },
-  trackPositionText: {
-    flexShrink: 0,
-    width: 26,
-    paddingVertical: 12,
-  },
-  headingText: {
-    paddingVertical: 12,
-    fontWeight: 500,
-  },
-  trackTitleText: {
-    flexGrow: 1,
-    maxWidth: '90%',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderColor: '#eaeaea',
-  },
-  genreContainer: {
-    flexDirection: 'row',
-    gap: 2,
-  },
-  moreInfoContainer: {
-    marginTop: 20,
-  },
-  labelsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    columnGap: 3,
-    maxWidth: '100%',
-  },
-  formatContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    columnGap: 3,
-    maxWidth: '100%',
-  },
-  myReviewContainer: {
-    marginTop: 20,
-    gap: 10,
-  },
-  reviewHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  editButton: {
-    color: '#f3571a',
-    fontSize: 14,
-  },
-  reviewInput: {
-    borderWidth: 1,
-    borderColor: '#eaeaea',
-    borderRadius: 8,
-    padding: 12,
-    minHeight: 100,
-    textAlignVertical: 'top',
-  },
   buttonContainer: {
     marginTop: 20,
     paddingBottom: 40,
@@ -447,20 +215,5 @@ const styles = StyleSheet.create({
   },
   deleteButtonText: {
     color: '#666',
-  },
-  discogsButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 50,
-    gap: 4,
-    marginTop: 12,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 50,
-    backgroundColor: '#f3571a',
-  },
-  discogsButtonText: {
-    color: '#fff',
   },
 });

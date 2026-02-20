@@ -2,17 +2,17 @@ import { VinylDetail } from '@/api/types';
 import { getVinylDetails } from '@/api/vinyl';
 import { SubHeader } from '@/components/layout/sub-header';
 import { ThemedText } from '@/components/layout/themed-text';
-import { ThemedView } from '@/components/layout/themed-view';
-import { Icon } from '@/components/ui/icon';
+import DiscogsButton from '@/components/ui/discogs-button';
+import VinylMainInfo from '@/components/vinyl/vinyl-main-info';
+import VinylMoreInfo from '@/components/vinyl/vinyl-more-info';
+import VinylTracklist from '@/components/vinyl/vinyl-tracklist';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { getMyVinyls, getWishlist, saveWishlistItem } from '@/utils/storage';
-import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  Linking,
   Platform,
   Pressable,
   StyleSheet,
@@ -75,12 +75,6 @@ export default function VinylDetailPage() {
     }
   };
 
-  const handleOpenDiscogs = async () => {
-    const url = `https://www.discogs.com/release/${id}`;
-    const canOpen = await Linking.canOpenURL(url);
-    if (canOpen) await Linking.openURL(url);
-  };
-
   if (loading) {
     return (
       <View style={{ flex: 1, backgroundColor }}>
@@ -107,79 +101,11 @@ export default function VinylDetailPage() {
     <View style={{ flex: 1, backgroundColor }}>
       <SubHeader scrollOffset={scrollOffset} />
       <Animated.ScrollView ref={scrollViewRef} style={styles.container}>
-        <ThemedView style={styles.infoContainer}>
-          <View style={styles.imageContainer}>
-            <Image
-              source={{ uri: vinylInfo.images?.[0].uri }}
-              contentFit="cover"
-              style={styles.image}
-            />
-          </View>
-          <ThemedText type="subtitle" style={styles.title}>
-            {vinylInfo.title}
-          </ThemedText>
-          <ThemedText type="sub" style={styles.artist}>
-            {vinylInfo.artists?.[0].name}
-          </ThemedText>
-          <View style={styles.subInfoContainer}>
-            {vinylInfo.year && (
-              <ThemedText type="small">{vinylInfo.year} •</ThemedText>
-            )}
-            {vinylInfo.country && (
-              <ThemedText type="small">{vinylInfo.country} •</ThemedText>
-            )}
-            {vinylInfo.genres?.map((genre, index) => (
-              <ThemedText key={`${index}-${genre}`} type="small">
-                {genre}
-              </ThemedText>
-            ))}
-          </View>
-        </ThemedView>
+        <VinylMainInfo vinylInfo={vinylInfo} />
 
-        <View style={styles.tracklistContainer}>
-          {vinylInfo.tracklist.map((track, index) => {
-            const isLastItem = index === vinylInfo.tracklist.length - 1;
-            return (
-              <View key={`${index}-${track.position}`} style={styles.track}>
-                <View style={styles.trackTitle}>
-                  <ThemedText type="sub" style={styles.trackPosition}>
-                    {track.position}
-                  </ThemedText>
-                  <ThemedText
-                    type="default"
-                    style={[
-                      track.type_ === 'heading'
-                        ? styles.headingText
-                        : styles.trackTitleText,
-                      isLastItem && { borderBottomWidth: 0 },
-                    ]}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                  >
-                    {track.title}
-                  </ThemedText>
-                </View>
-              </View>
-            );
-          })}
-        </View>
+        <VinylTracklist tracklist={vinylInfo.tracklist} />
 
-        <View style={styles.moreInfoContainer}>
-          {vinylInfo.released && (
-            <ThemedText type="small">발매일 : {vinylInfo.released}</ThemedText>
-          )}
-          {vinylInfo.labels && vinylInfo.labels.length > 0 && (
-            <View style={styles.labelsContainer}>
-              <ThemedText type="small">레이블 :</ThemedText>
-              {vinylInfo.labels.map((label, index) => (
-                <ThemedText key={`${label.catno}-${label.id}`} type="small">
-                  {label.name} - {label.catno}
-                  {index < vinylInfo.labels!.length - 1 ? ',' : ''}
-                </ThemedText>
-              ))}
-            </View>
-          )}
-        </View>
+        <VinylMoreInfo moreInfo={vinylInfo} />
 
         <View style={styles.actionContainer}>
           <Pressable
@@ -215,12 +141,7 @@ export default function VinylDetailPage() {
             </ThemedText>
           </Pressable>
 
-          <Pressable style={styles.discogsButton} onPress={handleOpenDiscogs}>
-            <Icon name="launch" size={18} color="#fff" />
-            <ThemedText type="defaultSemiBold" style={styles.discogsButtonText}>
-              Discogs에서 보기
-            </ThemedText>
-          </Pressable>
+          <DiscogsButton vinylId={Number(id)} color="gray" />
         </View>
         <View></View>
       </Animated.ScrollView>
@@ -347,17 +268,5 @@ const styles = StyleSheet.create({
   },
   disabledButton: {
     opacity: 0.4,
-  },
-  discogsButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 52,
-    gap: 4,
-    borderRadius: 30,
-    backgroundColor: '#333',
-  },
-  discogsButtonText: {
-    color: '#fff',
   },
 });

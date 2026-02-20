@@ -1,5 +1,6 @@
 import { MyVinyl } from '@/api/types';
 import { ThemedText } from '@/components/layout/themed-text';
+import Textarea from '@/components/ui/textarea';
 import StarRating from '@/components/vinyl/star-rating';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { getMyVinyls, saveVinyl } from '@/utils/storage';
@@ -12,7 +13,6 @@ import {
   Platform,
   Pressable,
   StyleSheet,
-  TextInput,
   View,
 } from 'react-native';
 
@@ -75,13 +75,10 @@ export default function AddReviewModal() {
           <ThemedText type="defaultSemiBold" style={styles.label}>
             리뷰
           </ThemedText>
-          <TextInput
-            style={styles.reviewInput}
-            placeholder="바이닐에 대한 리뷰를 남겨주세요. (선택)"
+          <Textarea
             value={reviewText}
             onChangeText={setReviewText}
-            multiline
-            placeholderTextColor="#aaa"
+            placeholder="바이닐에 대한 리뷰를 남겨주세요. (선택)"
           />
         </View>
 
